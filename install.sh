@@ -1,137 +1,145 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════
-#  JSXRay — Installer
-#  Author: Hari Kamma | https://github.com/harikamma/JSXRay
-# ═══════════════════════════════════════════════════════════
-
+# ══════════════════════════════════════════════════════════
+#  JSXRay v2.0 — One-Click Installer
+#  Author: Hari Kamma | github.com/Mr-White1/VenomJS
+# ══════════════════════════════════════════════════════════
 set -euo pipefail
 
-C='\033[1;36m'; G='\033[1;32m'; Y='\033[1;33m'; R='\033[1;31m'; N='\033[0m'
+CY='\033[1;36m'; GN='\033[1;32m'; YL='\033[1;33m'; RD='\033[1;31m'; NC='\033[0m'
 
-echo -e "${C}"
-cat << 'BANNER'
-  ██╗███████╗██╗  ██╗██████╗  █████╗ ██╗   ██╗
-  ██║╚════██║╚██╗██╔╝██╔══██╗██╔══██╗╚██╗ ██╔╝
-  ██║    ██╔╝ ╚███╔╝ ██████╔╝███████║ ╚████╔╝
-  ██║   ██╔╝  ██╔██╗ ██╔══██╗██╔══██║  ╚██╔╝
-  ██║   ██║  ██╔╝ ██╗██║  ██║██║  ██║   ██║
-  ╚═╝   ╚═╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
-                            Installer
-BANNER
-echo -e "${N}"
+print_banner() {
+echo -e "${CY}"
+cat << 'B'
+   ██╗███████╗██╗  ██╗██████╗  █████╗ ██╗   ██╗
+   ██║╚════██║╚██╗██╔╝██╔══██╗██╔══██╗╚██╗ ██╔╝
+   ██║    ██╔╝ ╚███╔╝ ██████╔╝███████║ ╚████╔╝
+   ██║   ██╔╝  ██╔██╗ ██╔══██╗██╔══██║  ╚██╔╝
+   ██║   ██║  ██╔╝ ██╗██║  ██║██║  ██║   ██║
+   ╚═╝   ╚═╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+          v2.0  Installer  |  Hari Kamma
+B
+echo -e "${NC}"
+}
 
+OK() { echo -e "  ${GN}[✓]${NC} $1"; }
+WN() { echo -e "  ${YL}[~]${NC} $1"; }
+ER() { echo -e "  ${RD}[!]${NC} $1"; }
+HD() { echo -e "\n${CY}[$1]${NC}"; }
+
+print_banner
 OS=$(uname -s)
-echo -e "${C}[*] Detected OS: ${Y}${OS}${N}"
+echo -e "  ${CY}[*]${NC} OS detected: ${YL}${OS}${NC}"
 
-install_core() {
-  echo -e "${C}[*] Installing core dependencies...${N}"
-  if [[ "$OS" == "Linux" ]]; then
-    if command -v apt &>/dev/null; then
-      sudo apt update -qq
-      sudo apt install -y curl grep gawk python3 python3-pip jq libimage-exiftool-perl binutils
+# ── 1. System packages ──────────────────────────────────
+HD "1/6 System dependencies"
+if [[ "$OS" == "Linux" ]]; then
+    if command -v apt-get &>/dev/null; then
+        sudo apt-get update -qq 2>/dev/null
+        sudo apt-get install -y \
+            python3 python3-pip curl wget git jq binutils \
+            libimage-exiftool-perl steghide ruby-full 2>/dev/null || true
+        OK "apt packages installed"
     elif command -v yum &>/dev/null; then
-      sudo yum install -y curl grep gawk python3 python3-pip jq perl-Image-ExifTool binutils
+        sudo yum install -y python3 python3-pip curl wget git jq perl-Image-ExifTool binutils 2>/dev/null || true
+        OK "yum packages installed"
     elif command -v pacman &>/dev/null; then
-      sudo pacman -Sy --noconfirm curl grep gawk python python-pip jq perl-image-exiftool binutils
+        sudo pacman -S --noconfirm python python-pip curl wget git jq perl-image-exiftool 2>/dev/null || true
+        OK "pacman packages installed"
     fi
-  elif [[ "$OS" == "Darwin" ]]; then
+elif [[ "$OS" == "Darwin" ]]; then
     if ! command -v brew &>/dev/null; then
-      echo -e "${Y}[*] Installing Homebrew...${N}"
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        WN "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
-    brew install curl gawk python3 jq exiftool binutils
-  fi
-  echo -e "${G}[✓] Core dependencies installed${N}"
-}
+    brew install python3 jq exiftool wget git steghide 2>/dev/null || true
+    OK "brew packages installed"
+fi
 
-install_optional() {
-  echo -e "${C}[*] Installing optional dependencies...${N}"
+# ── 2. Python packages ──────────────────────────────────
+HD "2/6 Python packages"
+pip3 install --break-system-packages requests Pillow jsbeautifier playwright 2>/dev/null || \
+pip3 install requests Pillow jsbeautifier playwright 2>/dev/null || \
+pip install requests Pillow jsbeautifier playwright 2>/dev/null || true
+OK "Python packages: requests Pillow jsbeautifier playwright"
 
-  # js-beautify
-  if command -v npm &>/dev/null; then
-    npm install -g js-beautify 2>/dev/null && echo -e "${G}  [✓] js-beautify${N}" \
-      || echo -e "${Y}  [~] js-beautify install skipped${N}"
-  fi
+# ── 3. Playwright Chromium ──────────────────────────────
+HD "3/6 Playwright Chromium browser"
+if python3 -m playwright install chromium 2>/dev/null; then
+    OK "Chromium browser installed (--browser mode enabled)"
+else
+    WN "Chromium install failed — --browser mode will be disabled"
+    WN "Try manually: python3 -m playwright install chromium"
+fi
 
-  # binwalk
-  if [[ "$OS" == "Linux" ]]; then
-    sudo apt install -y binwalk 2>/dev/null && echo -e "${G}  [✓] binwalk${N}" \
-      || echo -e "${Y}  [~] binwalk not available${N}"
-  fi
+# ── 4. zsteg (PNG steganography) ────────────────────────
+HD "4/6 zsteg (PNG stego tool)"
+if command -v gem &>/dev/null; then
+    gem install zsteg 2>/dev/null && OK "zsteg installed" || WN "zsteg install failed (optional)"
+else
+    WN "Ruby gems not found — zsteg skipped (optional)"
+fi
 
-  # strings (usually in binutils)
-  command -v strings &>/dev/null && echo -e "${G}  [✓] strings (binutils)${N}"
+# ── 5. Nuclei ───────────────────────────────────────────
+HD "5/6 Nuclei vulnerability scanner"
+if command -v go &>/dev/null; then
+    GO_BIN=$(go env GOPATH)/bin
+    export PATH="$PATH:$GO_BIN"
+    go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest 2>/dev/null && \
+        OK "Nuclei installed" || WN "Nuclei install failed"
+    nuclei -update-templates -silent 2>/dev/null || true
+    OK "Nuclei templates updated"
+else
+    WN "Go not found — Nuclei skipped"
+    WN "Install Go from: https://go.dev/dl/"
+    WN "Then: go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"
+fi
 
-  # nuclei
-  if command -v go &>/dev/null; then
-    echo -e "${C}  [*] Installing Nuclei...${N}"
-    go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest 2>/dev/null \
-      && echo -e "${G}  [✓] Nuclei installed${N}" \
-      || echo -e "${Y}  [~] Nuclei install failed (check Go PATH)${N}"
-  else
-    echo -e "${Y}  [~] Go not found — Nuclei skipped. Install Go first: https://go.dev/dl/${N}"
-  fi
+# ── 6. Finalize ─────────────────────────────────────────
+HD "6/6 Permissions & setup"
+chmod +x jsxray.py install.sh
 
-  echo -e "${G}[✓] Optional dependencies done${N}"
-}
+# Global symlink
+sudo ln -sf "$(pwd)/jsxray.py" /usr/local/bin/jsxray 2>/dev/null && \
+    OK "Symlink: jsxray → /usr/local/bin/jsxray" || \
+    WN "Symlink failed — use: python3 jsxray.py"
 
-make_executable() {
-  chmod +x jsxray.sh jsxray_analyze.py install.sh
-  echo -e "${G}[✓] Made executable${N}"
-}
-
-create_sample_input() {
-  if [[ ! -f "urls.txt" ]]; then
-    cat > urls.txt << 'EOF'
-# JSXRay — URL Input File
-# Add one URL per line (JS files, JSON endpoints, or pages for --deep-crawl)
-# Lines starting with # are ignored
+# Create sample urls.txt
+if [[ ! -f "urls.txt" ]]; then
+cat > urls.txt << 'SAMPLE'
+# JSXRay v2.0 — URL Input File
+# Add one target URL per line | Lines starting with # are ignored
 #
-# Examples:
+# === JS Files (direct) ===
 # https://target.com/static/js/main.chunk.js
 # https://target.com/static/js/vendors~main.chunk.js
+# https://target.com/assets/app.js
+#
+# === Pages (use with --browser to extract + scan all JS & images) ===
+# https://target.com/
+# https://app.target.com/dashboard
+#
+# === API endpoints ===
 # https://target.com/api/config
-EOF
-    echo -e "${G}[✓] Created sample urls.txt${N}"
-  fi
-}
+# https://target.com/api/v1/settings
+SAMPLE
+    OK "Created sample urls.txt"
+fi
 
-symlink_global() {
-  local INSTALL_DIR="/usr/local/bin"
-  if [[ -w "$INSTALL_DIR" ]] || sudo -n true 2>/dev/null; then
-    sudo ln -sf "$(pwd)/jsxray.sh" "$INSTALL_DIR/jsxray" 2>/dev/null && \
-      echo -e "${G}[✓] jsxray available globally as 'jsxray'${N}" || true
-  fi
-}
-
-main() {
-  echo -e "${C}[1/5] Installing core dependencies...${N}"
-  install_core
-
-  echo -e "${C}[2/5] Installing optional dependencies...${N}"
-  install_optional
-
-  echo -e "${C}[3/5] Setting permissions...${N}"
-  make_executable
-
-  echo -e "${C}[4/5] Creating sample input...${N}"
-  create_sample_input
-
-  echo -e "${C}[5/5] Creating global symlink...${N}"
-  symlink_global
-
-  echo ""
-  echo -e "${G}╔═══════════════════════════════════════════╗${N}"
-  echo -e "${G}║       JSXRay installed successfully!       ║${N}"
-  echo -e "${G}╠═══════════════════════════════════════════╣${N}"
-  echo -e "${G}║${N}  Quick start:                              ${G}║${N}"
-  echo -e "${G}║${N}    ./jsxray.sh --help                      ${G}║${N}"
-  echo -e "${G}║${N}    ./jsxray.sh -i urls.txt                 ${G}║${N}"
-  echo -e "${G}║${N}    ./jsxray.sh -i urls.txt --all           ${G}║${N}"
-  echo -e "${G}╚═══════════════════════════════════════════╝${N}"
-  echo ""
-  echo -e "  ${Y}⚠  Authorized security testing only.${N}"
-  echo -e "  ${Y}   Unauthorized use is illegal.${N}"
-}
-
-main "$@"
+echo ""
+echo -e "${GN}╔══════════════════════════════════════════════════════╗${NC}"
+echo -e "${GN}║          JSXRay v2.0 — Ready to fire! ⚡              ║${NC}"
+echo -e "${GN}╠══════════════════════════════════════════════════════╣${NC}"
+echo -e "${GN}║${NC}                                                      ${GN}║${NC}"
+echo -e "${GN}║${NC}  Quick scan:                                         ${GN}║${NC}"
+echo -e "${GN}║${NC}    python3 jsxray.py -i urls.txt                     ${GN}║${NC}"
+echo -e "${GN}║${NC}                                                      ${GN}║${NC}"
+echo -e "${GN}║${NC}  Full scan (all modules):                            ${GN}║${NC}"
+echo -e "${GN}║${NC}    python3 jsxray.py -i urls.txt --all               ${GN}║${NC}"
+echo -e "${GN}║${NC}                                                      ${GN}║${NC}"
+echo -e "${GN}║${NC}  Browser + image analysis:                          ${GN}║${NC}"
+echo -e "${GN}║${NC}    python3 jsxray.py -i urls.txt --browser \\         ${GN}║${NC}"
+echo -e "${GN}║${NC}      --scan-images --validate                        ${GN}║${NC}"
+echo -e "${GN}║${NC}                                                      ${GN}║${NC}"
+echo -e "${GN}╚══════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "  ${YL}⚠  Authorized security testing only — Hari Kamma${NC}"

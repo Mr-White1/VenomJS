@@ -1,12 +1,17 @@
-# JSXRay — URL Input File
-# Add one JavaScript or JSON URL per line.
-# Lines starting with # are ignored.
-# Use --deep-crawl to also accept HTML page URLs.
+# JSXRay v2.0 — URL Input File
+# Author: Hari Kamma | github.com/Mr-White1/VenomJS
 #
-# ── Examples ──────────────────────────────────────────────
+# Add one URL per line. Lines starting with # are ignored.
+#
+# ── JS files (most common target) ──────────────────────
 # https://target.com/static/js/main.chunk.js
 # https://target.com/static/js/vendors~main.chunk.js
-# https://target.com/static/js/2.chunk.js
+# https://target.com/assets/index.js
+#
+# ── Pages (use --browser to render + scan all JS & images) ─
+# https://target.com/
+# https://app.target.com/login
+#
+# ── API endpoints ────────────────────────────────────────
 # https://target.com/api/config
-# https://target.com/app.js
-# https://cdn.target.com/assets/js/bundle.min.js
+# https://target.com/api/v1/settings

@@ -1,575 +1,349 @@
 <div align="center">
 
 ```
-  ██╗███████╗██╗  ██╗██████╗  █████╗ ██╗   ██╗
-  ██║╚════██║╚██╗██╔╝██╔══██╗██╔══██╗╚██╗ ██╔╝
-  ██║    ██╔╝ ╚███╔╝ ██████╔╝███████║ ╚████╔╝
-  ██║   ██╔╝  ██╔██╗ ██╔══██╗██╔══██║  ╚██╔╝
-  ██║   ██║  ██╔╝ ██╗██║  ██║██║  ██║   ██║
-  ╚═╝   ╚═╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
+   ██╗███████╗██╗  ██╗██████╗  █████╗ ██╗   ██╗
+   ██║╚════██║╚██╗██╔╝██╔══██╗██╔══██╗╚██╗ ██╔╝
+   ██║    ██╔╝ ╚███╔╝ ██████╔╝███████║ ╚████╔╝
+   ██║   ██╔╝  ██╔██╗ ██╔══██╗██╔══██║  ╚██╔╝
+   ██║   ██║  ██╔╝ ██╗██║  ██║██║  ██║   ██║
+   ╚═╝   ╚═╝  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝
 ```
 
-# JSXRay ⚡
+**Ultra-Advanced JS + Image Secret Scanner**
 
-**Advanced JavaScript Secret & Vulnerability Scanner**
+[![Version](https://img.shields.io/badge/version-2.0.0-00e5ff?style=flat-square)](https://github.com/Mr-White1/VenomJS)
+[![Python](https://img.shields.io/badge/python-3.8+-00e5ff?style=flat-square&logo=python)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-00e5ff?style=flat-square)](LICENSE)
+[![Author](https://img.shields.io/badge/author-Hari%20Kamma-7c3aed?style=flat-square)](https://github.com/Mr-White1)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-cyan.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-blueviolet.svg)]()
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey.svg)]()
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)]()
-[![Author](https://img.shields.io/badge/author-Hari%20Kamma-orange.svg)](https://github.com/harikamma)
-
-*The scanner that actually reads your image URLs.*
-
-> ⚠️ **Authorized security testing and bug bounty only. Unauthorized use is illegal.**
+*The only JS scanner that also reads secrets hidden inside image files*
 
 </div>
 
 ---
 
-## 🔍 What is JSXRay?
+## ⚡ What is JSXRay?
 
-JSXRay is a powerful, all-in-one JavaScript security scanner built for **bug hunters and penetration testers**. It goes beyond simple grep-based scanning by combining:
+JSXRay is an ultra-advanced secret scanner for bug bounty hunters and pentesters. It scans JavaScript files, API endpoints, and web pages for exposed secrets — **and goes further than any other tool by also analyzing image files** for hidden credentials.
 
-- **90+ regex patterns** covering every major API and service
-- **Image URL analysis** — the gap that NO other public tool covers
-- **Source map recovery** — recover original source from minified files
-- **Shannon entropy analysis** — finds secrets no regex can catch
-- **Deobfuscation engine** — decodes `atob()`, `fromCharCode`, hex strings
-- **Live key validation** — confirms if a found key is actually working
-- **JSON API CVE checks** — GraphQL introspection, IDOR, mass data exposure
-- **Nuclei integration** — automatic vuln scanning on discovered endpoints
-- **3 report formats** — HTML dashboard + JSON + CSV
+Tools like **SecretFinder**, **LinkFinder**, and **JSFinder** scan JS content only. JSXRay v2.0 adds something none of them do:
+
+> **Real-world finding:** When you manually browse a target's JS-heavy web app, images load. Those images sometimes contain API keys in their EXIF metadata, tokens in PNG text chunks, or credentials in pixel-level steganography. No automation tool covered this — until now.
 
 ---
 
-## 🆚 JSXRay vs. Existing Tools
+## 🆚 JSXRay v2.0 vs Every Other Tool
 
-| Feature | JSXRay | SecretFinder | LinkFinder | JS Miner | TruffleHog |
-|---|:---:|:---:|:---:|:---:|:---:|
-| JS secret scanning | ✅ | ✅ | ⚠️ | ✅ | ✅ |
-| Image URL analysis | ✅ | ❌ | ❌ | ❌ | ❌ |
-| EXIF metadata extraction | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Binary strings from images | ✅ | ❌ | ❌ | ❌ | ❌ |
-| SVG script analysis | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Source map recovery | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Shannon entropy analysis | ✅ | ❌ | ❌ | ❌ | ✅ |
-| atob / fromCharCode decode | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Base64 secret detection | ✅ | ❌ | ❌ | ❌ | ⚠️ |
-| Live API key validation | ✅ | ⚠️ | ❌ | ❌ | ❌ |
-| GraphQL introspection check | ✅ | ❌ | ❌ | ❌ | ❌ |
-| IDOR detection | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Inline script extraction | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Nuclei integration | ✅ | ❌ | ❌ | ❌ | ❌ |
-| HTML report dashboard | ✅ | ❌ | ❌ | ⚠️ | ❌ |
-| Authenticated scanning | ✅ | ⚠️ | ❌ | ❌ | ❌ |
-| Proxy support (Burp) | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Deobfuscation | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 90+ patterns | ✅ | ⚠️ | ❌ | ⚠️ | ✅ |
+| Capability | SecretFinder | LinkFinder | JSFinder | **JSXRay v2.0** |
+|---|:---:|:---:|:---:|:---:|
+| JS secret scanning | ✅ | ✅ | ✅ | ✅ |
+| Bulk URL input | ❌ | ❌ | ✅ | ✅ |
+| Chromium headless browser (SPA support) | ❌ | ❌ | ❌ | ✅ |
+| **Image EXIF metadata secret extraction** | ❌ | ❌ | ❌ | **✅** |
+| **PNG text chunk analysis** | ❌ | ❌ | ❌ | **✅** |
+| **JPEG comment marker parsing** | ❌ | ❌ | ❌ | **✅** |
+| **LSB steganography detection** | ❌ | ❌ | ❌ | **✅** |
+| **Binary string extraction from images** | ❌ | ❌ | ❌ | **✅** |
+| **SVG inline script scanning** | ❌ | ❌ | ❌ | **✅** |
+| **Image URL query param secrets** | ❌ | ❌ | ❌ | **✅** |
+| Shannon entropy (unknown secrets) | ❌ | ❌ | ❌ | ✅ |
+| Deobfuscation (atob / fromCharCode / hex) | ❌ | ❌ | ❌ | ✅ |
+| Source map recovery | ❌ | ❌ | ❌ | ✅ |
+| Live API key validation | ❌ | ❌ | ❌ | ✅ |
+| Nuclei integration | ❌ | ❌ | ❌ | ✅ |
+| GraphQL / IDOR / CVE checks | ❌ | ❌ | ❌ | ✅ |
+| HTML + JSON + CSV reports | ❌ | ❌ | ❌ | ✅ |
+| **110+ secret patterns** | ~30 | ~10 | ~20 | **✅ 110+** |
+
+---
+
+## 🔍 Modules
+
+### Module 1 — Chromium Headless Browser
+Uses **Playwright** to launch a real Chromium browser that:
+- Renders full React/Vue/Angular/Next.js SPAs
+- Intercepts all network requests in real-time
+- Extracts lazy-loaded JS files that static scanners miss
+- Captures DOM image URLs including CSS `background-image` values
+- Returns rendered HTML for secret scanning
+
+### Module 2 — Image Secret Analysis *(The Gap No Other Tool Covers)*
+When JS files or pages reference image URLs (`.png`, `.jpg`, `.svg`, `.webp`, etc.), JSXRay downloads and analyzes each image through 9 sub-techniques:
+
+| # | Technique | What it Finds |
+|---|---|---|
+| 1 | **URL query params** | `?token=sk_live_xxx`, `?key=AKIA...` in image request URLs |
+| 2 | **EXIF metadata** | API keys in Author, Comment, Description EXIF fields |
+| 3 | **PNG text chunks** | Secrets in `tEXt`, `iTXt`, `zTXt` PNG metadata chunks |
+| 4 | **JPEG comment markers** | Hidden text in JPEG `0xFFFE` comment segments |
+| 5 | **Appended data** | Data after PNG IEND or JPEG EOI markers |
+| 6 | **LSB steganography** | Pixel-level hidden data via LSB encoding |
+| 7 | **Binary strings** | Readable strings extracted from image binary data |
+| 8 | **SVG scripts** | Inline `<script>` tags + base64 data URIs inside SVG files |
+| 9 | **steghide / zsteg** | Integration with specialized stego tools if installed |
+
+### Module 3 — Source Map Recovery
+Detects `//# sourceMappingURL=` references, downloads `.map` files, and recovers **original unminified React/Vue/Angular source code** — including files that were never meant to be public.
+
+### Module 4 — API Endpoint CVE Checks
+Discovers API endpoints from JS content and probes them for:
+- **Unauthenticated credential leaks** — JSON responses with `password`/`token` fields
+- **Mass data exposure** — array responses with 10+ records without auth
+- **IDOR** — numeric IDs in URL paths
+- **Stack trace disclosure** — debug traces in error responses
+- **GraphQL introspection** — full schema exposed publicly
+
+### Module 5 — Live API Key Validation
+Validates found keys against real APIs:
+
+| Service | What it Confirms |
+|---|---|
+| Google GCP | Key active + which APIs enabled |
+| Stripe | Live key valid + can list charges |
+| GitHub | Valid token + username |
+| Slack | Bot token active + workspace |
+| Telegram | Bot token + bot username |
+| OpenAI | Key active + can list models |
+| SendGrid | Key valid + account email |
+
+### Module 6 — Nuclei Integration
+Auto-updates Nuclei templates from [projectdiscovery/nuclei-templates](https://github.com/projectdiscovery/nuclei-templates) and runs the following tag groups on all discovered endpoints:
+```
+exposure, token, api, secret, config, debug, disclosure,
+misconfig, cve, js, auth-bypass, ssrf, xss
+```
+
+### Module 7 — Deobfuscation Engine
+Decodes commonly obfuscated JS before scanning:
+- `atob('base64string')` — Base64 decode
+- `fromCharCode(72,101,108,108,111)` — char code sequences
+- `'\x41\x50\x49\x4b\x45\x59'` — hex escape strings
+
+### Module 8 — Shannon Entropy Detection
+Identifies high-entropy strings (entropy ≥ 4.5) that no regex can catch — unknown secrets, custom tokens, and encryption keys.
 
 ---
 
 ## 📦 Installation
 
-### Quick Install (Recommended)
-
+### One-Click Install (Linux/macOS)
 ```bash
-git clone https://github.com/harikamma/JSXRay.git
-cd JSXRay
+git clone https://github.com/Mr-White1/VenomJS.git
+cd VenomJS
 chmod +x install.sh
 ./install.sh
 ```
 
-The installer automatically handles:
-- Core dependencies (`curl`, `jq`, `python3`, `exiftool`, etc.)
-- Optional tools (`js-beautify`, `binwalk`, `nuclei`)
-- Global symlink (`jsxray` command available everywhere)
-
 ### Manual Install
-
 ```bash
-# Clone
-git clone https://github.com/harikamma/JSXRay.git
-cd JSXRay
+git clone https://github.com/Mr-White1/VenomJS.git
+cd VenomJS
 
-# Make executable
-chmod +x jsxray.sh jsxray_analyze.py
+# Install Python dependencies
+pip3 install requests Pillow jsbeautifier playwright
 
-# Install core deps (Ubuntu/Debian)
-sudo apt install curl gawk python3 jq libimage-exiftool-perl binutils
+# Install Chromium for browser mode
+playwright install chromium
 
-# Install core deps (macOS)
-brew install curl gawk python3 jq exiftool
+# Install system tools (optional but recommended)
+# Ubuntu/Debian:
+sudo apt-get install exiftool steghide binutils
 
-# Optional: JS beautifier (for minified file readability)
-npm install -g js-beautify
+# macOS:
+brew install exiftool steghide
 
-# Optional: binwalk (for steganography analysis)
-sudo apt install binwalk
+# Install zsteg (PNG stego detection)
+gem install zsteg
 
-# Optional: Nuclei (for automated CVE scanning)
+# Install Nuclei (optional)
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
-```
-
-### Verify Installation
-
-```bash
-./jsxray.sh --help
-python3 jsxray_analyze.py --help
+nuclei -update-templates
 ```
 
 ---
 
 ## 🚀 Usage
 
-### Step 1 — Collect JS URLs
+### Step 1 — Create your URL input file
 
 ```bash
-# Using gau + waybackurls (recommended)
-gau target.com | grep "\.js$" > urls.txt
-waybackurls target.com | grep "\.js" >> urls.txt
+# urls.txt — one URL per line
+https://target.com/static/js/main.chunk.js
+https://target.com/static/js/vendors~main.chunk.js
+https://target.com/assets/app.bundle.js
+https://target.com/api/config
+```
 
-# Using subfinder + httpx
-subfinder -d target.com | httpx -silent | gau | grep "\.js" >> urls.txt
-
-# Using katana
-katana -u https://target.com -jc -d 3 | grep "\.js" > urls.txt
-
-# Or manually
-echo "https://target.com/static/js/main.chunk.js" > urls.txt
-echo "https://target.com/static/js/vendors.js" >> urls.txt
+**Pro tip:** Use [subjs](https://github.com/lc/subjs) or [getJS](https://github.com/003random/getJS) to extract all JS URLs from a domain first:
+```bash
+echo "https://target.com" | subjs >> urls.txt
+cat js_urls.txt >> urls.txt
 ```
 
 ### Step 2 — Run JSXRay
 
 ```bash
-# Basic scan
-./jsxray.sh -i urls.txt
+# Basic scan (secrets in JS files)
+python3 jsxray.py -i urls.txt
 
-# Full scan — all modules enabled
-./jsxray.sh -i urls.txt -d target.com --all
+# Full scan — enable ALL modules
+python3 jsxray.py -i urls.txt --all
 
-# With key validation
-./jsxray.sh -i urls.txt --validate
+# Browser mode — renders SPAs + captures lazy-loaded JS and images
+python3 jsxray.py -i urls.txt --browser --scan-images
 
-# Authenticated (with session cookies)
-./jsxray.sh -i urls.txt -c "session=abc123; auth=xyz789"
+# Authenticated scan (with session cookie)
+python3 jsxray.py -i urls.txt --all -c 'session=abc123; csrf=xyz'
 
 # Through Burp Suite proxy
-./jsxray.sh -i urls.txt -p http://127.0.0.1:8080
+python3 jsxray.py -i urls.txt --all -p http://127.0.0.1:8080
 
-# High-thread scan for speed
-./jsxray.sh -i urls.txt -t 30 -T 20
+# Custom threads + timeout for large scope
+python3 jsxray.py -i urls.txt --all --threads 20 -t 30
+
+# Image analysis only — just scan images found in JS
+python3 jsxray.py -i urls.txt --scan-images
+
+# With live key validation
+python3 jsxray.py -i urls.txt --validate
+
+# Save output to custom directory
+python3 jsxray.py -i urls.txt --all -o my_target_results
 ```
 
-### Step 3 — View Results
-
-```bash
-# Open HTML report (interactive, filterable)
-open jsxray_output_*/report.html           # macOS
-xdg-open jsxray_output_*/report.html      # Linux
-
-# Quick terminal view
-cat jsxray_output_*/report.csv
-
-# JSON (pipe-friendly)
-jq '.findings[] | select(.severity=="CRITICAL")' jsxray_output_*/findings.json
-```
-
----
-
-## ⚙️ All Options
+### All Flags
 
 ```
-USAGE:
-  ./jsxray.sh [OPTIONS]
+-i, --input FILE     URL input file (default: urls.txt)
+-t, --timeout N      HTTP timeout in seconds (default: 15)
+    --threads N      Parallel scan threads (default: 10)
+-p, --proxy URL      HTTP proxy (e.g. http://127.0.0.1:8080)
+-c, --cookies STR    Cookie string for authenticated scans
+-o, --output DIR     Custom output directory
 
-INPUT:
-  -i, --input <file>         File with JS/JSON URLs, one per line (default: urls.txt)
-  -d, --domain <domain>      Scope domain for crawl filtering (e.g. target.com)
+Modules:
+    --browser        Chromium headless browser (Playwright required)
+    --scan-images    Analyze all image files found in JS/pages
+    --sourcemaps     Recover .map source files
+    --json-api       Probe discovered API endpoints for CVEs
+    --validate       Live-validate found API keys against APIs
+    --nuclei         Run Nuclei on discovered endpoints
+    --all            Enable ALL modules above
 
-PERFORMANCE:
-  -t, --threads <n>          Parallel download threads (default: 10)
-  -T, --timeout <n>          HTTP request timeout in seconds (default: 15)
-
-AUTH / PROXY:
-  -p, --proxy <url>          HTTP/S proxy (e.g. http://127.0.0.1:8080)
-  -c, --cookies <str>        Cookie string for authenticated scanning
-  -H, --header <str>         Custom HTTP header (repeatable)
-
-SCAN MODULES:
-  --validate                 Live-validate discovered API keys
-  --deep-crawl               Crawl HTML pages, extract inline + linked JS
-  --scan-images              Analyze image URLs (EXIF, strings, SVG, params)
-  --sourcemaps               Download .map files → recover original source code
-  --json-api                 Probe API endpoints for CVEs and data exposure
-  --nuclei                   Run Nuclei with exposure/CVE templates
-  --all                      Enable ALL modules above
-
-OUTPUT:
-  -o, --output <dir>         Custom output directory
-  --silent                   Suppress banner; findings only (pipe-friendly)
-  --verbose                  Debug-level output
-
-OTHER:
-  -h, --help                 Show this help
+Output:
+    --verbose        Show debug output
 ```
-
----
-
-## 🧠 Python Analyzer (Deep Mode)
-
-The Python companion `jsxray_analyze.py` provides deeper analysis for already-downloaded files:
-
-```bash
-# Analyze a single file
-python3 jsxray_analyze.py app.js
-
-# Analyze a whole directory of JS files
-python3 jsxray_analyze.py ./jsxray_output_*/js_files/
-
-# Multiple files
-python3 jsxray_analyze.py main.js chunk.js vendor.js
-
-# Custom entropy threshold (lower = more results)
-python3 jsxray_analyze.py ./js/ --entropy-threshold 4.2 --min-len 16
-
-# Save to custom output
-python3 jsxray_analyze.py ./js/ -o my_analysis.json
-```
-
-**What the Python analyzer adds:**
-
-| Capability | Description |
-|---|---|
-| Shannon entropy | Flags high-entropy strings (likely tokens/keys) even without matching patterns |
-| `atob()` decode | Decodes all base64-encoded strings called via `atob()` |
-| `fromCharCode` decode | Reconstructs strings encoded as character codes |
-| Hex string decode | Decodes `\x41\x50\x49` style strings |
-| Obfuscation score | Rates JS files 0-8 on obfuscation indicators |
-| Image URL params | Checks every image URL in the file for sensitive query parameters |
-| Sensitive comments | Finds `// password:`, `/* TODO: remove key */` style leaks |
-
----
-
-## 🔬 Scan Modules Explained
-
-### `--scan-images` *(Unique to JSXRay)*
-
-Most tools skip image URLs entirely. JSXRay analyzes every image URL found inside JS:
-
-```
-Image URL found in JS: https://cdn.target.com/assets/logo.png?token=sk_live_xxxxx
-                                                               ↑
-                                               JSXRay catches this. Others don't.
-```
-
-For each image URL JSXRay:
-1. **Downloads** the image
-2. **EXIF extraction** — checks metadata for API keys, author fields, comments
-3. **Binary strings** — runs `strings` to find embedded text data
-4. **URL parameter scan** — checks for `?key=`, `?token=`, `?auth=` in the URL
-5. **SVG scripts** — SVG files can contain `<script>` tags and JavaScript
-6. **Binwalk** — detects and extracts hidden files inside images (steganography)
-
-### `--sourcemaps`
-
-Minified JS often has a reference like `//# sourceMappingURL=main.js.map`. JSXRay:
-1. Detects this comment in downloaded JS
-2. Downloads the `.map` file
-3. Extracts all original source files (often React/Vue/Angular components)
-4. Scans those recovered files — which usually contain real variable names and readable secrets
-
-### `--json-api`
-
-Probes extracted endpoints for:
-- **GraphQL introspection** — sends `{__schema{types{name}}}` test query
-- **Unauthenticated credential leak** — JSON responses containing password/token fields
-- **Mass data exposure** — arrays with >10 records returned without auth
-- **IDOR** — numeric IDs in URL paths
-- **Stack trace disclosure** — verbose error pages leaking framework/DB info
-- **API spec exposure** — Swagger / OpenAPI accessible publicly
-
-### `--validate`
-
-Validates found keys against real APIs (carefully, read-only calls only):
-
-| Key Type | Validation Method |
-|---|---|
-| Google / GCP API Key | Geocoding API test request |
-| Stripe (live/test) | List charges (limit=1) |
-| GitHub PAT | `/user` endpoint — returns username |
-| Slack Token | `auth.test` endpoint |
-| SendGrid Key | `/v3/user/profile` endpoint |
-| Telegram Bot | `getMe` endpoint — returns bot username |
-
----
-
-## 🎯 Pattern Coverage (90+ patterns)
-
-<details>
-<summary>Click to expand full pattern list</summary>
-
-**Cloud — AWS**
-- AWS Access Key (`AKIA...`)
-- AWS Secret Key
-- AWS MWS Key
-- AWS Account ID
-
-**Cloud — GCP / Firebase**
-- GCP API Key
-- GCP OAuth Client
-- GCP Service Account
-- Firebase Server Key
-- Firebase Config object
-- Firebase Realtime DB URL
-
-**Cloud — Azure**
-- Azure Storage Connection String
-- Azure Client Secret
-
-**Payment / Fintech**
-- Stripe Secret (live + test)
-- Stripe Publishable
-- Stripe Restricted Key
-- PayPal Braintree
-- Square Token + Secret
-- Razorpay Key
-- Shopify Access Token + Shared Secret
-
-**Auth / JWT**
-- JWT Token
-- Google OAuth Token
-- Bearer Token
-- Basic Auth Header
-- Auth credentials in URL
-
-**Source Control & CI/CD**
-- GitHub PAT, OAuth, App Token
-- GitLab PAT + Runner Token
-- BitBucket Secret
-- CircleCI Token
-- Travis CI Token
-- Jenkins Token
-
-**Communication / Messaging**
-- Slack Token + Webhook URL
-- Discord Token + Webhook URL
-- Telegram Bot Token
-- Twilio Account SID + Auth Token
-- SendGrid API Key
-- Mailgun API Key
-- Mailchimp API Key
-- Mandrill Key
-- Vonage / Nexmo Key
-
-**Databases**
-- MongoDB URI
-- PostgreSQL URI
-- MySQL URI
-- Redis URI
-- Elasticsearch URI
-- Supabase JWT
-- S3 Bucket URL
-
-**Social / Dev APIs**
-- Twitter API Key + Bearer
-- Facebook Access Token
-- YouTube API Key
-- HubSpot Key
-- Mapbox Token
-- HERE Maps Key
-
-**Crypto / Web3**
-- Ethereum Private Key
-- Crypto Mnemonic / Seed Phrase
-- Infura Key
-- Alchemy Key
-
-**Cryptographic Material**
-- RSA Private Key
-- EC Private Key
-- OpenSSH Private Key
-- PGP Private Key Block
-- X.509 Certificate
-
-**Generic / Catch-all**
-- Generic API Key variables
-- Generic Secret variables
-- Generic Password variables
-- Generic Token variables
-- Internal IP addresses (RFC 1918)
-- SMTP/FTP URIs with credentials
-- SSN / PII patterns
-- Hardcoded admin credentials
-- Debug flags
-- Admin, GraphQL, Swagger routes
-
-</details>
 
 ---
 
 ## 📁 Output Structure
 
 ```
-jsxray_output_YYYYMMDD_HHMMSS/
-├── report.html                ← Interactive HTML dashboard (filterable by severity)
-├── findings.json              ← Full machine-readable findings (jq-friendly)
-├── report.csv                 ← Spreadsheet-compatible output
-├── jsxray.log                 ← Full verbose log
-├── endpoints_discovered.txt   ← All extracted endpoints (for Nuclei / manual testing)
-│
-├── js_files/                  ← Downloaded JS/JSON files
-│   ├── abc123def456.js
-│   └── abc123def456_pretty.js ← Beautified version
-│
-├── img_analysis/              ← Downloaded images + analysis
-│   ├── *.png / *.jpg / *.svg
-│   └── binwalk_*/             ← Binwalk-extracted hidden files
-│
-├── sourcemaps/                ← Recovered source files
-│   └── src_*/                 ← Original React/Vue/Angular components
-│
-├── api_responses/             ← JSON API responses
-│   └── *.json
-│
-├── deobfuscated/              ← Deobfuscated versions of JS files
-└── .tmp/                      ← Internal temp (dedup index, etc.)
+jsxray_output_20241201_143022/
+├── report.html          ← Interactive HTML dashboard (open in browser)
+├── findings.json        ← All findings in JSON format
+├── findings.csv         ← Spreadsheet-friendly CSV export
+├── jsxray.log           ← Full scan log
+├── endpoints.txt        ← Discovered API endpoints (for Nuclei)
+├── js_files/            ← Downloaded raw JS files
+├── img_analysis/        ← Downloaded images + analysis output
+├── api_responses/       ← API endpoint response bodies
+├── sourcemaps/          ← Recovered source map files
+└── nuclei_results.txt   ← Nuclei scan output (if --nuclei used)
 ```
 
 ---
 
-## 🔄 Full Bug Bounty Workflow
+## 🔎 Secret Pattern Coverage (110+)
+
+| Category | Patterns |
+|---|---|
+| **Cloud** | AWS Access Key, AWS Secret, AWS Session Token, GCP API Key, GCP Service Account, Firebase Server Key, Firebase Config, Azure Storage, Azure Client Secret, Azure SAS |
+| **Payments** | Stripe Live/Test/Restricted, Stripe Webhook, PayPal Braintree, Square Token/Secret, Razorpay, Shopify Access/Secret, Adyen |
+| **Auth / JWT** | JWT Token, OAuth Google, Bearer Token, Auth-in-URL, API Key in URL |
+| **Source Control** | GitHub PAT/OAuth/App/Fine-Grained, GitLab PAT/Runner, CircleCI, Netlify, Vercel |
+| **Communication** | Slack Bot/User/Webhook, Discord Token/Webhook, Telegram Bot, Twilio SID/Auth, SendGrid, Mailgun, Mailchimp, Postmark |
+| **Databases** | MongoDB URI, PostgreSQL URI, MySQL URI, Redis URI, Supabase Key, S3 Bucket, PlanetScale, Neon DB |
+| **AI / LLM** | OpenAI Key (sk-/sk-proj-), Anthropic Key, Groq Key, Replicate Token, HuggingFace Token |
+| **Social APIs** | Twitter API/Bearer, Facebook Token, Mapbox Token, Algolia Key |
+| **Crypto / Web3** | ETH Private Key, Seed Phrase/Mnemonic, Infura Key, Alchemy Key |
+| **Crypto Material** | RSA Private Key, EC Private Key, OpenSSH Key, PGP Private Key |
+| **Sensitive Data** | Credit Cards, SSN, SMTP Credentials |
+| **Generic** | Generic API Key, Generic Secret, Generic Password, Generic Token |
+| **Endpoints** | Admin Routes, GraphQL, Swagger/OpenAPI, Debug Flags, SSRF Metadata |
+
+---
+
+## 🌊 Real-World Bug Bounty Workflow
 
 ```bash
-# ── 1. Recon: collect all JS URLs ──────────────────────────
-TARGET="target.com"
+# 1. Gather all JS URLs from target
+subfinder -d target.com -silent | httpx -silent | subjs > js_urls.txt
+cat js_urls.txt | getJS --complete >> js_urls.txt
+sort -u js_urls.txt > urls.txt
 
-subfinder -d $TARGET -silent | \
-  httpx -silent | \
-  gau | \
-  grep -iP '\.js(\?|$)' | \
-  sort -u > urls.txt
+# 2. Run JSXRay with all modules
+python3 jsxray.py -i urls.txt --all --threads 15
 
-waybackurls $TARGET | grep -iP '\.js(\?|$)' >> urls.txt
-sort -u urls.txt -o urls.txt
+# 3. Open the HTML report
+open jsxray_output_*/report.html    # macOS
+xdg-open jsxray_output_*/report.html  # Linux
 
-echo "[*] $(wc -l < urls.txt) JS URLs collected"
-
-# ── 2. Run JSXRay full scan ─────────────────────────────────
-./jsxray.sh \
-  -i urls.txt \
-  -d $TARGET \
-  --all \
-  --validate \
-  -t 20 \
-  -T 20
-
-# ── 3. Deep Python analysis on downloaded files ─────────────
-python3 jsxray_analyze.py jsxray_output_*/js_files/ \
-  --entropy-threshold 4.3 \
-  -o deep_analysis.json
-
-# ── 4. Review critical findings ────────────────────────────
-jq '.findings[] | select(.severity=="CRITICAL")' \
-  jsxray_output_*/findings.json
-
-# ── 5. Open HTML dashboard ─────────────────────────────────
-xdg-open jsxray_output_*/report.html
+# 4. Validate any Critical findings immediately
+python3 jsxray.py -i urls.txt --validate
 ```
 
 ---
 
-## 🛡️ Complementary Tools
+## 🛠️ System Tool Dependencies
 
-JSXRay works best alongside:
-
-| Tool | Purpose | Install |
+| Tool | Purpose | Required? |
 |---|---|---|
-| `gau` | Fetch all JS URLs from archives | `go install github.com/lc/gau/v2/cmd/gau@latest` |
-| `waybackurls` | Wayback Machine URL fetch | `go install github.com/tomnomnom/waybackurls@latest` |
-| `subfinder` | Subdomain enumeration | `go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest` |
-| `httpx` | HTTP probe / filter live hosts | `go install github.com/projectdiscovery/httpx/cmd/httpx@latest` |
-| `katana` | Modern JS-aware web crawler | `go install github.com/projectdiscovery/katana/cmd/katana@latest` |
-| `nuclei` | CVE / template scanning | `go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest` |
-| `Burp Suite` | Proxy + manual inspection | https://portswigger.net |
+| `python3` | Run the scanner | **Required** |
+| `pip` packages | See requirements.txt | **Required** |
+| `playwright + chromium` | Browser mode (`--browser`) | Optional |
+| `exiftool` | EXIF metadata analysis | Optional (recommended) |
+| `strings` | Binary string extraction | Optional (auto-fallback) |
+| `steghide` | JPEG/BMP steganography | Optional |
+| `zsteg` | PNG steganography | Optional |
+| `nuclei` + `go` | CVE/exposure scanning | Optional |
 
 ---
 
-## 📋 Common Errors
+## 📋 Requirements
 
-| Error | Fix |
-|---|---|
-| `js.txt not found` | Create `urls.txt` with target URLs, or use `-i yourfile.txt` |
-| `jq: command not found` | `sudo apt install jq` |
-| `No matches found` | Try `--deep-crawl` to extract more JS from HTML pages |
-| `curl: (28) Timeout` | Increase timeout: `-T 30` |
-| `exiftool not found` | `sudo apt install libimage-exiftool-perl` — image EXIF skipped |
-| `nuclei: not found` | Install Go, then `go install ...nuclei@latest` |
-| `Permission denied` | `chmod +x jsxray.sh` |
+- Python 3.8+
+- pip packages: `requests`, `Pillow`, `jsbeautifier`, `playwright`
 
 ---
 
-## 🤝 Contributing
+## ⚠️ Legal Disclaimer
 
-Pull requests welcome! Please:
-
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feature/new-pattern`
-3. Add patterns to the `PATTERNS` array in `jsxray.sh` with proper severity
-4. Test with a sample file
-5. Submit PR with description
-
-**Ideas for contribution:**
-- New secret patterns (new services, new token formats)
-- Additional validation methods
-- Docker container
-- Web UI for the HTML report
-- Windows (PowerShell) port
+> JSXRay is developed for **authorized security testing only**.
+> Unauthorized use against systems you don't own or have explicit permission to test is **illegal** and punishable under computer fraud laws worldwide.
+> The author assumes **zero liability** for misuse.
+> Always operate within the scope of your bug bounty program or written authorization.
 
 ---
 
-## 📜 Changelog
+## 👤 Author
 
-### v1.0.0 (2025)
-- Initial public release
-- 90+ secret patterns across all major services
-- Image URL analysis module (EXIF, strings, binwalk, SVG, URL params)
-- Source map recovery
-- Shannon entropy analysis (Python module)
-- Deobfuscation engine (atob, fromCharCode, hex)
-- Live key validation (6 services)
-- JSON API CVE checks (GraphQL, IDOR, mass exposure)
-- Nuclei integration
-- Triple report output (HTML + JSON + CSV)
-- Deep crawl mode
-- Proxy & cookie auth support
+**Hari Kamma**
+- GitHub: [@Mr-White1](https://github.com/Mr-White1)
+- Tool Repo: [github.com/Mr-White1/VenomJS](https://github.com/Mr-White1/VenomJS)
 
 ---
 
-## ⚖️ Legal & Ethics
+## 📄 License
 
-JSXRay is a security research tool. By using it you agree to:
-
-- **Only test systems you own or have explicit written permission to test**
-- **Report findings responsibly** via the target's security disclosure program
-- **Not use this tool** for unauthorized access, data theft, or any illegal purpose
-- **Comply with all applicable laws** in your jurisdiction
-
-The author (**Hari Kamma**) assumes zero liability for misuse.
-
-Unauthorized testing is illegal under:
-- Computer Fraud and Abuse Act (CFAA) — USA
-- Computer Misuse Act — UK
-- IT Act 2000 — India
-- And equivalent laws worldwide
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-**Made with ⚡ by [Hari Kamma](https://github.com/harikamma)**
+⚡ **JSXRay v2.0** — *Find what others miss*
 
-*If this tool helped you find a bug, consider giving it a ⭐ on GitHub*
+Made with 🔥 by **Hari Kamma**
 
 </div>
