@@ -1,0 +1,47 @@
+# JSXRay — .gitignore
+
+# Output directories (never commit scan results)
+jsxray_output_*/
+jsdh_output_*/
+output_*/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Secrets (NEVER commit real target data)
+*.key
+*.pem
+*.p12
+*.pfx
+real_urls.txt
+targets.txt
+session.txt
+
+# Test artifacts
+test_output/
+*.tmp
